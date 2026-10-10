@@ -1,10 +1,50 @@
-# 3D-Printable Bygrave Position Line Calculator
+# Bygrave Position Line Calculator — 3D Print and Simulator
 
 A 3D-printable mechanical core for building a working **Bygrave Position Line Calculator** for celestial navigation.
 
 The Bygrave is a cylindrical slide rule designed to solve the spherical triangle used in celestial sight reduction. This project provides printable concentric tubes and an outer cursor/frame intended to be used with the excellent reproduction scale artwork created by **Wayne Harrison**.
 
 ![Assembled prototype](bygrave_assembly.png)
+
+## Browser simulator
+
+The interactive teaching simulator is separate from the printer files in [`simulator/`](simulator/). It includes 3D and flat displays, guided sight reduction, fine movement controls, definitions, A → Zn rules, and a compact Setup → Move → Read guide above the tube. It generates its own mathematical scales; Harrison's copyrighted artwork is not bundled.
+
+![3D simulator with compact Setup → Move → Read instructions](simulator/screenshots/3d-reduction.png)
+
+[View the flat-scale screenshot](simulator/screenshots/flat-reduction.png).
+
+### Install and run
+
+You need **Python 3** and a modern web browser. Node.js and npm are not required to use the simulator.
+
+1. Clone this repository, or use GitHub's **Code → Download ZIP** and extract it.
+
+   ```sh
+   git clone https://github.com/kq6up/bygrave.git
+   cd bygrave
+   ```
+
+   If you downloaded a ZIP, open a terminal in its extracted repository folder instead.
+
+2. Start the local server from the repository folder:
+
+   ```sh
+   python3 -m http.server 8000 --bind 127.0.0.1
+   ```
+
+   On Windows, use `py -3 -m http.server 8000 --bind 127.0.0.1` if `python3` is unavailable. Install Python 3 first if neither command is available.
+
+3. Open [http://127.0.0.1:8000/simulator/](http://127.0.0.1:8000/simulator/) in your browser. Keep the terminal open; press **Ctrl+C** to stop the server.
+
+Do not open `index.html` directly as a file; its JavaScript modules require a local HTTP server. If port 8000 is busy, use another port, such as 8001, in both the server command and browser URL.
+
+See the [simulator README](simulator/README.md) for operation, angle conventions, supported sights, and known limits. Its 3D geometry is schematic and does not validate the printed instrument's fit or scale registration.
+
+## Repository layout
+
+- **Printer files:** OpenSCAD, STL, and assembly/exploded renders remain at the repository root; their instructions follow below.
+- **Simulator:** browser source, bundled libraries, documentation, and developer checks are contained in `simulator/`.
 
 ## Project status
 

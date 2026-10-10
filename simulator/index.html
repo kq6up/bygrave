@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bygrave Scale Lab</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <p class="eyebrow">Sandbox · Guided sight reduction</p>
+        <h1>Bygrave Scale Lab</h1>
+        <p class="intro">Operate the same scales in 3D or flat view. Keep the outer cursor in view while the inner and middle tubes move relative to its L/S pointers.</p>
+      </div>
+      <button id="reset" type="button">Reset to center</button>
+    </header>
+
+    <section class="notice" aria-label="Scope note">
+      <strong>Supported procedure:</strong> ordinary first-quadrant sights with nonzero LAT/DEC, 0° &lt; |LHA| &lt; 90°, and 0° &lt; Y &lt; 90°. Supplementary-angle and near-singular cases are flagged. Both displays use mathematical scales; the 3D spiral pitch and window layout are illustrative, pending calibration to Harrison's drawings.
+    </section>
+
+    <section class="explainer" aria-labelledby="inputs-title">
+      <div>
+        <p class="eyebrow">Start with the sight</p>
+        <h2 id="inputs-title">How LAT, DEC, and LHA meet the scales</h2>
+        <p><strong>LAT</strong> is your position north or south of the equator. <strong>DEC</strong> is the observed body's position north or south of the sky's equator. <strong>LHA</strong> tells how far the body is west or east of your local meridian.</p>
+      </div>
+      <ol>
+        <li>Put <strong>DEC under L</strong>, the long pointer, on the inner cotangent scale.</li>
+        <li>Move the cursor so <strong>LHA is under S</strong>, the short pointer, on the middle cosine scale.</li>
+        <li>Read the intermediate angle <strong>y at L</strong> on the cotangent scale. Then use latitude: convert it to co-latitude (<strong>90° − |LAT|</strong>) and combine that with y. Same-name LAT/DEC uses addition; opposite-name uses subtraction, with special cases handled by the historical instructions.</li>
+      </ol>
+      <p class="scale-meaning"><strong>What the scale names mean:</strong> cotangent and cosine are mathematical functions that turn those angles into positions along the graduated strips. They are the instrument's way of doing the multiplication/division in the sight-reduction formulas with distances and alignment. They are not extra inputs.</p>
+      <p class="example"><strong>Example:</strong> for LAT 34°N, DEC 15°N, and LHA 40°W, the ordinary first intermediate is y ≈ 19° 16.7′. Co-latitude is 56°, so this same-name case gives Y ≈ 75° 16.7′. The guided sequence below now displays each Bygrave step.</p>
+    </section>
+
+    <section class="reduction" aria-labelledby="reduction-title">
+      <div class="reduction-head">
+        <div><p class="eyebrow">Guided manual sequence</p><h2 id="reduction-title">Bygrave sight reduction</h2></div>
+        <button id="runReduction" type="button">Set up step 1</button>
+      </div>
+      <p class="reduction-note">Sight reduction turns your LAT, DEC, and LHA into the body's direction (true azimuth) and its height above the horizon (calculated altitude). The Bygrave gets there through several intermediate angles. Angle readouts use degrees and minutes to the nearest tenth: <strong>34° 20.5′</strong> means 34 degrees and 20.5 minutes of arc. There are 60 minutes in one degree. Numeric input fields use decimal degrees.</p>
+      <section class="symbol-key" aria-labelledby="symbols-title">
+        <h3 id="symbols-title">What each letter means</h3>
+        <p class="case-example"><strong>Lowercase y comes first. Uppercase Y comes next.</strong> For the example sight, you read <strong>y = 19° 16.7′</strong> from DEC and LHA. Latitude 34° gives co-latitude 56°. Both LAT and DEC are north, so <strong>Y = 56° 00.0′ + 19° 16.7′ = 75° 16.7′</strong>.</p>
+        <table>
+          <thead><tr><th scope="col">Symbol</th><th scope="col">Meaning in this simulator</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">LAT</th><td><strong>Latitude:</strong> your assumed position north or south of the equator.</td></tr>
+            <tr><th scope="row">DEC</th><td><strong>Declination:</strong> the body's position north or south of the celestial equator.</td></tr>
+            <tr><th scope="row">LHA / H</th><td><strong>Local hour angle.</strong> H is the size of your LHA used on the scales: LHA 40°W or 40°E both use H = 40°. The E/W direction is kept for the final azimuth.</td></tr>
+            <tr><th scope="row">y <small>lowercase</small></th><td><strong>First intermediate angle:</strong> read it at L on the cotangent scale after moving S to H on the cosine scale. It combines DEC and H; latitude has not yet been used.</td></tr>
+            <tr><th scope="row">Co-latitude</th><td><strong>90° minus the size of LAT.</strong> For LAT 34°N or 34°S, co-latitude is 56°. The bars in |LAT| mean “use its size without the N/S sign.”</td></tr>
+            <tr><th scope="row">Y <small>uppercase</small></th><td><strong>Intermediate angle including latitude:</strong> combine co-latitude with lowercase y by arithmetic. In this supported branch, add y when LAT and DEC are both N or both S; subtract y when one is N and the other S.</td></tr>
+            <tr><th scope="row">A</th><td><strong>Bygrave azimuth angle:</strong> an acute angle read at L on the cotangent scale in step 3. The simulator converts it into a true bearing from 0° to 360°, clockwise from north.</td></tr>
+            <tr><th scope="row">Zn</th><td><strong>True azimuth:</strong> the final bearing clockwise from true north. North is 000°, east 090°, south 180°, and west 270°. Convert A using your latitude hemisphere and the body's east/west direction.</td></tr>
+            <tr><th scope="row">h <small>lowercase</small></th><td><strong>Calculated altitude:</strong> the body's angular height above the horizon, read at L on the cotangent scale in the final step. Here h means altitude; uppercase H means hour angle.</td></tr>
+            <tr><th scope="row">L / S</th><td><strong>Long / short pointers:</strong> L reads the inner cotangent scale; S reads the middle cosine scale. Both pointers move together on the cursor.</td></tr>
+            <tr><th scope="row">cot / cos</th><td><strong>Cotangent / cosine:</strong> the mathematical functions built into the spacing of the scale marks. Aligning and moving those marks performs the formulas shown under each step.</td></tr>
+          </tbody>
+        </table>
+      </section>
+      <p class="scale-rule"><strong>L → inner cotangent scale. S → middle cosine scale.</strong> An angle may be read on one scale and then set on the other for the next operation. Follow the scale named in each step.</p>
+      <div class="steps">
+        <article><span class="step-num">STEP 1</span><h3>Find the first intermediate: lowercase y</h3><p>The setup places the size of DEC under <strong>L on the cotangent scale</strong> and zero under <strong>S on the cosine scale</strong>.</p><dl class="step-readings"><div><dt>S · middle cosine scale</dt><dd>Move the cursor until this reads H = <strong id="targetH">—</strong>.</dd></div><div><dt>L · inner cotangent scale</dt><dd>Read lowercase y here.</dd></div></dl><span class="result-label">y · first intermediate from DEC and H</span><output id="yReadout">—</output><details class="step-formula"><summary>Formula behind the scale movement</summary><code>cot y = cot |DEC| × cos H</code></details><button id="acceptY" class="step-button" type="button" disabled>Use lowercase y to find uppercase Y</button></article>
+        <article><span class="step-num">STEP 2</span><h3>Include latitude: uppercase Y</h3><p>First find co-latitude: 90° − |LAT| = <strong id="coLatReadout">—</strong>. Combine it with the y from step 1. Both LAT and DEC N, or both S: add y. One N and one S: subtract y.</p><p class="arithmetic-note"><strong>Calculate Y by addition or subtraction.</strong> This step does not require a new reading from either scale.</p><span class="result-label">Y · intermediate including latitude</span><output id="YReadout">—</output><details class="step-formula"><summary>Formula for this branch</summary><code>Y = co-latitude + y (same N/S)<br>Y = co-latitude − y (opposite N/S)</code></details><button id="setupA" class="step-button" type="button" disabled>Set up the direction calculation</button></article>
+        <article><span class="step-num">STEP 3</span><h3>Find the direction: Bygrave angle A</h3><p>The setup puts lowercase y under <strong>S on the cosine scale</strong> and H under <strong>L on the cotangent scale</strong>.</p><dl class="step-readings"><div><dt>S · middle cosine scale</dt><dd>Move the cursor until this reads uppercase Y from step 2.</dd></div><div><dt>L · inner cotangent scale</dt><dd>Read A here, then convert it to a true bearing from north.</dd></div></dl><span class="result-label">A · Bygrave azimuth angle</span><output id="AReadout">—</output><small class="residual">True azimuth · bearing from north: <strong id="bygraveAzimuth">—</strong></small><details class="step-formula"><summary>Formula behind the scale movement</summary><code>cot A = cot H × cos Y / cos y</code></details><button id="acceptA" class="step-button" type="button" disabled>Use A to set up the altitude calculation</button></article>
+        <article><span class="step-num">STEP 4</span><h3>Find the height above the horizon: h</h3><p>The setup puts A under <strong>S on the cosine scale</strong> and uppercase Y under <strong>L on the cotangent scale</strong>.</p><dl class="step-readings"><div><dt>S · middle cosine scale</dt><dd>Return the cursor position to 0 so this scale reads zero.</dd></div><div><dt>L · inner cotangent scale</dt><dd>Read h here: the calculated altitude above the horizon.</dd></div></dl><span class="result-label">h · calculated altitude above the horizon</span><output id="hReadout">—</output><small id="altResidual" class="residual">—</small><details class="step-formula"><summary>Formula behind the scale movement</summary><code>cot h = cot Y / cos A</code></details></article>
+      </div>
+      <section class="azimuth-key" aria-labelledby="azimuth-title">
+        <h3 id="azimuth-title">Convert A → Zn · true azimuth</h3>
+        <p>A is the angle read at L in step 3. Zn is the final bearing clockwise from true north. For this simulator's supported branch, use:</p>
+        <table><thead><tr><th scope="col">Your LAT</th><th scope="col">Body's direction</th><th scope="col">Conversion</th></tr></thead><tbody>
+          <tr><th scope="row">North</th><td>West</td><td>Zn = 180° + A</td></tr>
+          <tr><th scope="row">North</th><td>East</td><td>Zn = 180° − A</td></tr>
+          <tr><th scope="row">South</th><td>West</td><td>Zn = 360° − A</td></tr>
+          <tr><th scope="row">South</th><td>East</td><td>Zn = A</td></tr>
+        </tbody></table>
+        <p>Positive hour angle means west; negative means east. Example: LAT 34°N, H 40°W, A = 72° 12.7′ gives Zn = 180° + A = <strong>252° 12.7′</strong>. Other branches need additional quadrant rules.</p>
+      </section>
+      <p id="reductionStatus" class="reduction-status" role="status">Set up step 1, then move the cursor until the S reading matches your LHA.</p>
+      <p id="branchWarning" class="branch-warning" hidden></p>
+    </section>
+
+    <section class="instrument" aria-label="Interactive unwrapped scales">
+      <section class="angle-adjustment" aria-labelledby="fine-title">
+        <div><h2 id="fine-title">Precisely position the cursor by angle</h2><p id="angleTarget">Set up step 1 to see its target.</p></div>
+        <label for="cursorAngle">Set S · middle cosine scale (decimal °)</label>
+        <input id="cursorAngle" type="number" min="0" max="89.999" step="0.001" value="0" aria-describedby="angleHelp">
+        <button id="alignTarget" type="button" disabled>Align S to this step's target</button>
+        <div class="angle-nudges" aria-label="Fine angular adjustment"><button type="button" data-angle-nudge="-0.01">−0.01°</button><button type="button" data-angle-nudge="-0.001">−0.001°</button><button type="button" data-angle-nudge="0.001">+0.001°</button><button type="button" data-angle-nudge="0.01">+0.01°</button></div>
+        <p id="angleHelp">Type the desired S angle in decimal degrees (e.g. 34.5 = 34° 30.0′), or use the small angle buttons. Readouts show degrees and tenths of a minute. Both pointers move together; the two scale strips stay fixed. The L reading updates automatically.</p>
+        <p id="angleMessage" role="status"></p>
+      </section>
+      <div class="pointer-readouts" aria-label="Live readings from each scale">
+        <article><h2>L · inner cotangent scale</h2><p>Reading at the long pointer: <strong id="readCotL">—</strong></p><p id="readCotMeaning" class="reading-purpose">Set up step 1 to read lowercase y here.</p></article>
+        <article><h2>S · middle cosine scale</h2><p>Reading at the short pointer: <strong id="readCosS">—</strong></p><p id="readCosMeaning" class="reading-purpose">Set up step 1, then move this reading to H (your hour angle).</p></article>
+      </div>
+      <div class="view-toolbar" aria-label="Display options"><div class="view-switch"><button id="view3d" type="button" aria-pressed="true">3D tubes</button><button id="viewFlat" type="button" aria-pressed="false">Flat scales</button></div><span>Same settings and readings in both views</span></div>
+      <div id="tubeTools" class="tube-tools"><label>Dragging adjusts <select id="tubeDragPart"><option value="cursor">L/S cursor · both relative alignments</option><option value="inner">Inner cotangent tube</option><option value="middle">Middle cosine tube</option></select></label><div><button type="button" data-camera="front">Front view</button><button type="button" data-camera="angled">Angled view</button><button type="button" data-zoom="0.2" aria-label="Zoom in on the 3D display">Zoom +</button><button type="button" data-zoom="-0.2" aria-label="Zoom out of the 3D display">Zoom −</button></div></div>
+      <section class="tube-guide" aria-labelledby="tube-guide-title">
+        <p id="tube-guide-title" class="guide-title"><strong>Setup → Move → Read</strong> · L = cotangent · S = cosine · Move the L/S cursor together after setup.</p>
+        <table class="flow-table"><thead><tr><th scope="col">Step</th><th scope="col">Setup</th><th scope="col">Move</th><th scope="col">Read / calculate</th></tr></thead><tbody>
+          <tr data-guide-step="1"><th scope="row">1 · y</th><td>zero → S · DEC → L</td><td>Cursor until S reads H</td><td>Lowercase <strong>y at L</strong></td></tr>
+          <tr data-guide-step="2"><th scope="row">2 · Y</th><td>Co-latitude = 90° − |LAT|</td><td>None · arithmetic only</td><td><strong>Y</strong> = co-latitude + y (same N/S), − y (opposite)</td></tr>
+          <tr data-guide-step="3"><th scope="row">3 · A</th><td>lowercase y → S · H → L</td><td>Cursor until S reads uppercase Y</td><td><strong>A at L</strong>, then convert A → Zn</td></tr>
+          <tr data-guide-step="4"><th scope="row">4 · h</th><td>A → S · uppercase Y → L</td><td>Cursor until S reads zero</td><td>Altitude <strong>h at L</strong></td></tr>
+        </tbody></table>
+        <p class="quick-zn"><strong>A → Zn:</strong> <span id="guideZnRule">—</span></p>
+        <p id="guideWarning" class="branch-warning" hidden></p>
+      </section>
+      <div id="tubeViewport" class="tube-viewport"><canvas id="tubeCanvas" aria-label="3D cutaway Bygrave with fixed L and S pointers and movable coaxial scale tubes"></canvas><div class="tube-index" data-index="inner"><span>L · inner cotangent</span><strong>—</strong></div><div class="tube-index" data-index="middle"><span>S · middle cosine</span><strong>—</strong></div><p class="tube-status">Loading the local 3D display…</p></div>
+      <p id="displayNote" class="display-note">3D cutaway: windows are enlarged for visibility. The helical graduations are generated mathematically; pitch and pointer registration are schematic. Tube motion includes rotation and axial travel to keep track of the helix turn.</p>
+      <svg id="instrument" hidden viewBox="0 0 1000 390" role="img" aria-label="Two logarithmic scales with a movable L and S cursor">
+        <rect x="0" y="0" width="1000" height="390" rx="16" class="svg-bg" />
+        <text x="28" y="44" class="scale-title">INNER · cotangent · read at L</text>
+        <text x="28" y="195" class="scale-title">MIDDLE · cosine · read at S</text>
+        <text x="28" y="350" class="axis-note">Unwrapped log-value coordinate →</text>
+        <g id="innerTicks" data-part="inner"></g>
+        <g id="middleTicks" data-part="middle"></g>
+        <g id="cursor" data-part="cursor"></g>
+      </svg>
+      <p class="hint">Use the angle controls above for precise alignment. Dragging and the wide sliders below give rough positioning; hold Shift while dragging for 10× finer movement. In 3D, moving the cursor changes both tubes relative to the fixed outer frame. In flat view, the L/S lines move across the strips.</p>
+    </section>
+
+    <section class="controls" aria-label="Instrument movements">
+      <div class="part-control"><label>Middle cosine strip offset <output id="middleValue"></output><input id="middleSlider" type="range" min="-650" max="650" step="0.01" value="0"><input id="middleNumber" class="position-number" type="number" min="-650" max="650" step="0.0001" value="0" aria-label="Precise middle scale position in pixels"></label><div class="nudge-controls" data-part-control="middle" aria-label="Fine middle scale adjustment"></div><p class="control-reading">Current angle at S: <strong id="middleAngleValue">—</strong></p></div>
+      <div class="part-control"><label>Inner cotangent strip offset <output id="innerValue"></output><input id="innerSlider" type="range" min="-650" max="650" step="0.01" value="0"><input id="innerNumber" class="position-number" type="number" min="-650" max="650" step="0.0001" value="0" aria-label="Precise inner scale position in pixels"></label><div class="nudge-controls" data-part-control="inner" aria-label="Fine inner scale adjustment"></div><p class="control-reading">Current angle at L: <strong id="innerAngleValue">—</strong></p></div>
+      <div class="part-control"><label>Cursor assembly offset <output id="cursorValue"></output><input id="cursorSlider" type="range" min="-650" max="650" step="0.01" value="0"><input id="cursorNumber" class="position-number" type="number" min="-650" max="650" step="0.0001" value="0" aria-label="Precise cursor assembly position in pixels"></label><div class="nudge-controls" data-part-control="cursor" aria-label="Fine cursor adjustment"></div></div>
+    </section>
+
+    <section class="readings">
+      <article class="reference"><h2>Sight inputs & independent check</h2>
+        <p class="small">These inputs drive the guided Bygrave sequence above. The check uses separate spherical-trig equations.</p>
+        <div class="sight-inputs">
+          <label>Latitude · decimal ° <input id="lat" type="number" value="34" step="0.1"></label>
+          <label>Declination · decimal ° <input id="dec" type="number" value="15" step="0.1"></label>
+          <label>Hour angle · decimal ° <input id="hour" type="number" value="40" step="0.1"></label>
+        </div>
+        <p>Altitude <strong id="altitude">—</strong></p>
+        <p>Azimuth <strong id="azimuth">—</strong></p>
+        <p class="small">True azimuth clockwise from north; positive hour angle is westward.</p>
+      </article>
+    </section>
+    <footer>Mathematical coordinate lab · no source artwork included · geometry calibration pending</footer>
+  </main>
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
