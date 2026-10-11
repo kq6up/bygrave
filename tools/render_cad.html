@@ -1,0 +1,31 @@
+<!doctype html><meta charset="utf-8"><title>Bygrave V1.1 CAD render</title>
+<style>body{position:relative;width:1400px;height:1750px;margin:0;background:#f6f7f8;font-family:system-ui;color:#203341}h1{position:absolute;top:20px;left:40px;font-size:28px;margin:0}p{position:absolute;bottom:15px;left:40px;font-size:16px}canvas{display:block;padding-top:80px}</style>
+<h1 id="heading">Bygrave V1.1 — experimental pointer prototype</h1><p id="note">Actual exported CAD geometry • red tips are integral to the sleeve • scale wraps omitted</p>
+<script type="module">
+import * as THREE from '../simulator/vendor/three/three.module.js';
+const mode=new URLSearchParams(location.search).get('mode')||'assembly';
+const renderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(1400,1600);renderer.setPixelRatio(1);renderer.setClearColor(0xf6f7f8);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;document.body.appendChild(renderer.domElement);
+const scene=new THREE.Scene();const camera=new THREE.PerspectiveCamera(30,1400/1600,.1,2500);
+const light=new THREE.DirectionalLight(0xffffff,3);light.position.set(100,350,200);light.castShadow=true;light.shadow.mapSize.set(2048,2048);light.shadow.camera.left=-220;light.shadow.camera.right=220;light.shadow.camera.top=320;light.shadow.camera.bottom=-80;light.shadow.camera.far=700;light.shadow.bias=-.00015;scene.add(light);scene.add(new THREE.HemisphereLight(0xeef7ff,0x7f7a66,2));
+const loader=async(url,color,offset=0,xoff=0)=>{
+ const bytes=await fetch(url).then(r=>r.arrayBuffer());const v=new DataView(bytes);const n=v.getUint32(80,true);const a=new Float32Array(n*9);
+ for(let i=0;i<n;i++)for(let j=0;j<3;j++){const p=84+i*50+12+j*12;const k=i*9+j*3;a[k]=v.getFloat32(p,true)+xoff;a[k+1]=v.getFloat32(p+8,true)+offset;a[k+2]=-v.getFloat32(p+4,true);}
+ const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(a,3));geo.computeVertexNormals();
+ const mesh=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color,roughness:.62,metalness:.12}));mesh.castShadow=true;mesh.receiveShadow=true;scene.add(mesh);return mesh;
+};
+const prefix='../';
+await loader(prefix+'bygrave_inner_tube.stl',0xc8bb98,0,mode==='exploded'?-75:0);
+await loader(prefix+'bygrave_middle_tube.stl',0xb2a079,mode==='exploded'?0:-12);
+await loader('render-parts/shell.stl',0x34444f,0,mode==='exploded'?78:0);
+await loader('render-parts/pointers.stl',0xf02e26,0,mode==='exploded'?78:0);
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(1800,1800),new THREE.ShadowMaterial({opacity:.17}));ground.rotation.x=-Math.PI/2;ground.position.y=-12.1;ground.receiveShadow=true;scene.add(ground);
+const angle=THREE.MathUtils.degToRad(317);
+if(mode==='detailL'||mode==='detailS'){
+ const y=mode==='detailL'?190.5:70.7;const r=135;const tx=mode==='detailL'?28.5:29.5;const tz=mode==='detailL'?3:8;camera.position.set(tx+r*Math.cos(angle),y+26,tz-r*Math.sin(angle));camera.lookAt(tx,y,tz);camera.fov=24;camera.updateProjectionMatrix();
+ document.getElementById('heading').textContent=mode==='detailL'?'L — long pointer / inner cotangent tube':'S — short pointer / middle cosine tube';
+ document.getElementById('note').textContent='Experimental adjustable index • nominal tip clearance 0.30 mm over finished wrap';
+}else if(mode==='exploded'){
+ camera.position.set(260,255,410);camera.lookAt(0,104,0);camera.fov=35;camera.updateProjectionMatrix();document.getElementById('heading').textContent='Bygrave V1.1 — exploded CAD assembly';
+}else{const r=435;camera.position.set(r*Math.cos(angle),265,-r*Math.sin(angle));camera.lookAt(0,100,0);}
+renderer.render(scene,camera);window.cadReady=true;
+</script>
