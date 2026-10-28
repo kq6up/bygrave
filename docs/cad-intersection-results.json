@@ -1,0 +1,42 @@
+[
+  {
+    "case": "inner",
+    "middle_z": 0,
+    "empty_intersection": true,
+    "expected_empty": true,
+    "passed": true,
+    "exit": 1
+  },
+  {
+    "case": "middle",
+    "middle_z": -20,
+    "empty_intersection": true,
+    "expected_empty": true,
+    "passed": true,
+    "exit": 1
+  },
+  {
+    "case": "middle",
+    "middle_z": -12,
+    "empty_intersection": true,
+    "expected_empty": true,
+    "passed": true,
+    "exit": 1
+  },
+  {
+    "case": "middle",
+    "middle_z": -7.5,
+    "empty_intersection": true,
+    "expected_empty": true,
+    "passed": true,
+    "exit": 1
+  },
+  {
+    "case": "middle_collision",
+    "middle_z": -6,
+    "empty_intersection": false,
+    "expected_empty": false,
+    "passed": true,
+    "exit": 0
+  }
+]

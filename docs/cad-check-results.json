@@ -1,0 +1,69 @@
+{
+  "meshes": [
+    {
+      "file": "bygrave_inner_tube.stl",
+      "triangles": 1536,
+      "closed": true,
+      "consistent_winding": true,
+      "components": 1,
+      "volume_mm3": 83754.391
+    },
+    {
+      "file": "bygrave_middle_tube.stl",
+      "triangles": 1536,
+      "closed": true,
+      "consistent_winding": true,
+      "components": 1,
+      "volume_mm3": 75415.006
+    },
+    {
+      "file": "bygrave_outer_cursor_tube.stl",
+      "triangles": 2456,
+      "closed": true,
+      "consistent_winding": true,
+      "components": 1,
+      "volume_mm3": 67233.299
+    },
+    {
+      "file": "bygrave_cursor_coupons.stl",
+      "triangles": 560,
+      "closed": true,
+      "consistent_winding": true,
+      "components": 2,
+      "volume_mm3": 313.952
+    },
+    {
+      "file": "bygrave_od_check_rings.stl",
+      "triangles": 4608,
+      "closed": true,
+      "consistent_winding": true,
+      "components": 3,
+      "volume_mm3": 15317.871
+    },
+    {
+      "file": "bygrave_ladder_middle.stl",
+      "triangles": 29264,
+      "closed": true,
+      "consistent_winding": true,
+      "components": 5,
+      "volume_mm3": 22437.646
+    },
+    {
+      "file": "bygrave_ladder_outer.stl",
+      "triangles": 29264,
+      "closed": true,
+      "consistent_winding": true,
+      "components": 5,
+      "volume_mm3": 24320.756
+    }
+  ],
+  "default_clearance": {
+    "L_min_radial_gap_mm": 0.3,
+    "S_min_radial_gap_mm": 0.279,
+    "nominal_tip_gap_mm": 0.3,
+    "middle_rim_z_mm": 182.9,
+    "L_body_min_z_mm": 187.5,
+    "conservative_middle_top_limit_mm": 187.4
+  },
+  "scope": "Mesh and default-pose mechanical checks only; no scale registration or physical print validation."
+}

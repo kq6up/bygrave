@@ -1,4 +1,4 @@
-# Bygrave Position Line Calculator — 3D Print and Simulator
+# Bygrave V1.1 - Pointer Prototype and Browser Simulator
 
 A 3D-printable mechanical core for building a working **Bygrave Position Line Calculator** for celestial navigation.
 
@@ -46,6 +46,39 @@ See the [simulator README](simulator/README.md) for operation, angle conventions
 - **Printer files:** OpenSCAD, STL, and assembly/exploded renders remain at the repository root; their instructions follow below.
 - **Simulator:** browser source, bundled libraries, documentation, and developer checks are contained in `simulator/`.
 
+## Experimental red-pointer prototype
+
+The mechanical files now include integral triangular **L and S pointers**, inspired by the supplied concept illustrations. L reaches toward the inner cotangent tube; S reads the middle cosine tube. The pointers are shown red in CAD renders. A normal single-material STL prints them in the same material as the sleeve; paint them red for visibility.
+
+**This is an experimental mechanical prototype. Its pointer positions are not registered to Harrison's artwork, and the teaching simulator does not establish that registration.** Print the cursor coupons and calibrate the finished wraps before committing to the long sleeve. See [CAD validation and limitations](docs/cad-validation.md).
+
+![L pointer detail](bygrave_pointer_detail.png)
+
+![S pointer detail](bygrave_s_pointer_detail.png)
+
+### Pointer controls
+
+| Parameter | Default | Meaning |
+|---|---:|---|
+| `pointers` | `true` | Include both tips in the outer sleeve STL |
+| `pointer_l_from_top` | 6.35 mm | L tip 190.50 mm above sleeve bottom |
+| `pointer_s_from_top` | 126.15 mm | S tip 70.70 mm above sleeve bottom |
+| `pointer_l_gap`, `pointer_s_gap` | 0.30 mm | Nominal radial gap over finished scale tube |
+| `pointer_arc` | 8.0 mm | Arc from window edge to reading tip |
+| `pointer_tip_height` | 0.40 mm | Finite axial reading-edge width |
+| `pointer_tip_thickness` | 0.80 mm | Radial thickness of reading tip |
+| `middle_assembly_z` | -12.0 mm | Rendered middle-tube offset; no physical stop is provided |
+
+`middle_assembly_z` places the middle rim below the inward-reaching L in the displayed pose. The middle must remain below the L body during use; axial motion beyond this envelope can cause a collision. The adjustable defaults follow the illustrations, not verified scale indices. Changing wraps or tip positions requires rechecking the clearances and registration.
+
+Export the two small sleeve-edge coupons with:
+
+```sh
+openscad -o bygrave_cursor_coupons.stl -D 'part="cursor_coupon"' bygrave_3dprint.scad
+```
+
+They are sections of the actual sleeve and integral pointer geometry. L and S coupons retain their different radial reach. Check both on the cured, wrapped tubes; determine supports and print orientation in your slicer. A coupon fit is necessary but does not validate sight-reduction accuracy.
+
 ## Project status
 
 This is an early prototype intended for practical experimentation, dimensional calibration, and eventual use with Harrison's scale artwork.
@@ -55,8 +88,10 @@ The current design includes:
 - parametric OpenSCAD source
 - inner scale tube
 - middle scale tube
-- outer cursor/frame tube
-- calibration rings
+- outer cursor/frame tube with adjustable L and S pointers
+- small cursor-edge test coupons
+- printer check rings for the scale-bearing diameters
+- fit-ladder rings for choosing bore clearances
 - assembled and exploded reference renders
 
 The mechanical design is deliberately simple so that diameters, clearances, and tube lengths can be adjusted after real-world test prints.
@@ -69,7 +104,12 @@ The mechanical design is deliberately simple so that diameters, clearances, and 
 | `bygrave_inner_tube.stl` | Inner/cotangent-scale tube |
 | `bygrave_middle_tube.stl` | Intermediate/cosine-scale tube |
 | `bygrave_outer_cursor_tube.stl` | Outer cursor/frame tube |
-| `bygrave_calibration_rings.stl` | Short test rings — print these first |
+| `bygrave_cursor_coupons.stl` | Small sleeve-edge sections with integral L/S tips |
+| `bygrave_calibration_rings.stl` | Compatibility alias of OD-check rings |
+| `bygrave_pointer_detail.png` | Render of actual pointer CAD |
+| `bygrave_od_check_rings.stl` | Short rings at the three scale-bearing diameters — print these first |
+| `bygrave_ladder_middle.stl` | Five fit rings for the middle bore, stepped over the wrapped inner tube |
+| `bygrave_ladder_outer.stl` | Five fit rings for the outer bore, stepped over the wrapped middle tube |
 | `bygrave_assembly.png` | Assembled render |
 | `bygrave_exploded.png` | Exploded render |
 
@@ -91,15 +131,35 @@ The three scale PDFs are currently hosted by Harrison on Google Drive:
 
 **These PDFs are not included in this repository.** Harrison's artwork is copyrighted, and permission to redistribute it is being requested. Until explicit permission is granted, this repository links to the original files rather than mirroring them.
 
-## Dimensions used
+## Dimensions: the artwork is fixed, the bores are measured
 
-Measurements taken from the registration/template geometry of Harrison's PDFs correspond closely to the historical Bygrave diameters:
+Harrison's scales only meet themselves at the seam when the wrap circumference is right, so the artwork sets the scale-bearing diameters and never gets scaled.
 
-| Part | Target circumference | Approx. diameter |
+| Part | Artwork circumference | Artwork diameter |
 |---|---:|---:|
 | Inner scale | 169.6466 mm | 54.0002 mm |
 | Middle scale | 185.3438 mm | 58.9968 mm |
 | Outer template | 200.9140 mm | 63.9529 mm |
+
+Two rules follow from that:
+
+1. **Plastic diameter = circumference ÷ π − paper thickness − 2 × glue thickness.** This puts the middle of the paper on the artwork circumference. With the defaults (0.10 mm paper, 0.02 mm glue) each tube prints about 0.14 mm smaller than the artwork diameter, so the wrap closes exactly at the seam.
+2. **Each bore = the measured finished diameter of the tube inside it + a running clearance.** The finished diameter includes paper, glue and any shellac.
+
+The OpenSCAD file computes all of this and prints the results to the console:
+
+| Parameter | Default | Meaning |
+|---|---:|---|
+| `paper_t` | 0.10 | Paper or film thickness, mm |
+| `glue_t` | 0.02 | Adhesive under the paper, mm |
+| `coat_t` | 0.03 | Shellac or sealing coat on top, mm |
+| `inner_finished_measured` | 0 | Caliper reading of the wrapped inner tube (0 = use estimate) |
+| `middle_finished_measured` | 0 | Caliper reading of the wrapped middle tube (0 = use estimate) |
+| `middle_clearance` | 0.35 | Diametral clearance of the middle bore |
+| `outer_clearance` | 0.35 | Diametral clearance of the outer bore |
+| `ladder_steps` | 0.15 … 0.55 | Clearances tried by the fit-ladder rings |
+
+The STLs in the repository use the estimates. Regenerate the middle and outer tubes from your own measurements before printing them.
 
 Default tube lengths are:
 
@@ -107,30 +167,34 @@ Default tube lengths are:
 - middle: **194.90 mm**
 - outer: **196.85 mm**
 
-The outer cursor windows were positioned from the cutout geometry in Harrison's outer scale sheet.
+The outer cursor windows were positioned from the cutout geometry in Harrison's outer scale sheet. They are set by angle, so they don't change with diameter.
 
-## Print the calibration rings first
+## Build order
 
-Before printing the full-length tubes:
+Start with the OD checks, fit ladders and cursor coupons. The default pointer registration has not been verified against the scale artwork.
 
-1. Print `bygrave_calibration_rings.stl` using the same material, nozzle, slicer settings, wall count, and orientation you plan to use for the final parts.
-2. Measure the actual outside diameters with calipers in several directions.
-3. Measure the thickness of the paper or adhesive film you intend to use for the scales.
-4. Adjust the CAD diameter or PDF print scaling if needed.
 
-For a first-order estimate, if the paper thickness is (t) and the measured plastic diameter is (D), the effective diameter at the approximate center of the paper thickness is
+1. Measure your paper with calipers and set `paper_t` (and `glue_t`, `coat_t` if you know them).
+2. Print `bygrave_od_check_rings.stl` and measure the three rings. If the printer is off, adjust its flow or horizontal expansion until the rings match the plastic diameters in the console.
+3. Print the inner tube. Wrap it, seal it, let it dry, and measure its finished diameter in several places.
+4. Print the middle-bore ladder from that measurement:
 
-[
-D_{eff} \approx D + t
-]
+   ```
+   openscad -o ladder_middle.stl -D 'part="ladder_middle"' \
+     -D inner_finished_measured=54.16 bygrave_3dprint.scad
+   ```
 
-and therefore
+   Slide each ring over the wrapped inner tube. Pick the tightest one that turns and slides freely along the whole length. The tab and the number of rim notches (one to five) tell you which clearance it is.
+5. Print the middle tube with that measurement and clearance:
 
-[
-C_{eff} \approx \pi(D+t)
-]
+   ```
+   openscad -o middle.stl -D 'part="middle"' \
+     -D inner_finished_measured=54.16 -D middle_clearance=0.35 bygrave_3dprint.scad
+   ```
 
-Even thin paper matters when the goal is navigation-grade scale accuracy.
+6. Wrap and measure the middle tube, then repeat steps 4–5 with `part="ladder_outer"`, `middle_finished_measured` and `outer_clearance` for the outer tube.
+
+Print the ladder rings with the same material, slicer settings, wall count and orientation as the tube they stand in for: FDM bores usually print slightly undersize, and the ladder absorbs that error along with the paper.
 
 ## Printing notes
 
@@ -142,12 +206,7 @@ Even thin paper matters when the goal is navigation-grade scale accuracy.
 - Dimensional calibration matters more than cosmetic layer height.
 - Do not sand the scale-bearing outside diameter until after measuring it.
 
-The default bores are intentionally somewhat generous:
-
-- middle ID: **54.80 mm**
-- outer ID: **59.80 mm**
-
-The tubes should rotate and slide freely without binding.
+The tubes should rotate and slide freely without binding, but without play: every bit of play becomes reading error.
 
 ## Scale printing
 
@@ -156,9 +215,9 @@ Use thin, smooth, dimensionally stable paper or adhesive film. Heavy glossy phot
 When printing the scale PDFs:
 
 - disable **Fit to page**
-- print at a controlled scale
+- print at **100% / actual size**; preserve the specified artwork circumference
 - verify the registration width with a ruler or calipers before gluing
-- prefer uniform scaling, since the spiral pitch is part of the scale geometry
+- correct mechanical fit through the CAD parameters rather than scaling a wrap
 
 For the outer tube, align the left edge of the printed template with the small seam witness notch in the STL.
 
