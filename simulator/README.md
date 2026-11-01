@@ -29,21 +29,23 @@ Alternatively, choose **Code → Download ZIP** on GitHub, extract the ZIP, and 
 
 ### Serve the files
 
-From the **repository root**, run:
+From the **repository root**, run the launcher:
 
 ```sh
-python3 -m http.server 8000 --bind 127.0.0.1
+python3 simulator/serve.py
 ```
 
 On Windows, the equivalent launcher is usually:
 
 ```powershell
-py -3 -m http.server 8000 --bind 127.0.0.1
+py -3 simulator/serve.py
 ```
 
-Open **[http://127.0.0.1:8000/simulator/](http://127.0.0.1:8000/simulator/)**. Leave the terminal running; press **Ctrl+C** to stop it. The server binds to your own computer.
+The launcher opens the simulator in your default browser and prints its address. It chooses a free port automatically and serves only the simulator folder on your own computer. Leave the terminal running; press **Ctrl+C** to stop it. No additional Python packages are needed.
 
-If port 8000 is busy, replace it with 8001 in both the command and URL. Open the page through this server rather than double-clicking `index.html`: JavaScript modules need HTTP. If you start the server from inside this `simulator/` folder instead, use `http://127.0.0.1:8000/`.
+From inside this `simulator/` folder, use `python3 serve.py`. You can also pass an absolute path to the script from any folder. Add `--no-browser` to print the address without opening a browser.
+
+Open the page through this server rather than double-clicking `index.html`: JavaScript modules need HTTP.
 
 After editing or updating the files, reload the browser page. If it still shows an older version, use the browser's reload-without-cache command.
 
@@ -110,6 +112,7 @@ The simulator does not establish the printed instrument's fit, physical calibrat
 ## Source layout and developer checks
 
 - `index.html`, `style.css`: interface and instructions.
+- `serve.py`: local server and browser launcher using Python's standard library.
 - `src/app.js`: controls, readings, and guided reduction.
 - `src/math.js`: scale transforms and independent spherical-trig reference.
 - `src/angles.js`: degrees/minutes display formatting.
