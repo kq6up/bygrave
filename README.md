@@ -109,6 +109,7 @@ The mechanical design is deliberately simple so that diameters, clearances, and 
 | `bygrave_pointer_detail.png` | Render of actual pointer CAD |
 | `bygrave_od_check_rings.stl` | Short rings at the three scale-bearing diameters — print these first |
 | `bygrave_ladder_middle.stl` | Five fit rings for the middle bore, stepped over the wrapped inner tube |
+| `bygrave_ladder_middle_extended.stl` | Two larger middle-bore fit rings: +0.65 and +0.75 mm, with raised labels |
 | `bygrave_ladder_outer.stl` | Five fit rings for the outer bore, stepped over the wrapped middle tube |
 | `bygrave_assembly.png` | Assembled render |
 | `bygrave_exploded.png` | Exploded render |
@@ -195,6 +196,30 @@ Start with the OD checks, fit ladders and cursor coupons. The default pointer re
 6. Wrap and measure the middle tube, then repeat steps 4–5 with `part="ladder_outer"`, `middle_finished_measured` and `outer_clearance` for the outer tube.
 
 Print the ladder rings with the same material, slicer settings, wall count and orientation as the tube they stand in for: FDM bores usually print slightly undersize, and the ladder absorbs that error along with the paper.
+
+### Larger middle-tube step rings
+
+If the +0.55 mm ring still grips the inner tube, print
+`bygrave_ladder_middle_extended.stl` at 100% scale. Each tab shows the
+diametral clearance on top and the nominal inside diameter (ID) below it.
+
+| Clearance | Stock bore ID | Rim notches |
+|---|---:|---:|
+| +0.65 mm | 54.81 mm | 6 |
+| +0.75 mm | 54.91 mm | 7 |
+
+These bore sizes use the stock estimated finished inner diameter of 54.16 mm.
+To use your own measurement, substitute the widest measured diameter of the
+wrapped, fully dried inner tube for `54.16` below. The tab labels update with it.
+
+```sh
+openscad -o bygrave_ladder_middle_extended.stl -D 'part="ladder_middle_extended"' \
+  -D inner_finished_measured=54.16 bygrave_3dprint.scad
+```
+
+Use the smallest ring that slides and rotates freely over the full length.
+Use the same measured diameter and that ring's clearance when exporting the
+replacement middle tube.
 
 ## Printing notes
 

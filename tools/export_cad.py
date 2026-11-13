@@ -14,6 +14,7 @@ args = parser.parse_args()
 parts = {'inner':'bygrave_inner_tube.stl', 'middle':'bygrave_middle_tube.stl',
          'outer':'bygrave_outer_cursor_tube.stl', 'od_check':'bygrave_od_check_rings.stl',
          'ladder_middle':'bygrave_ladder_middle.stl', 'ladder_outer':'bygrave_ladder_outer.stl',
+         'ladder_middle_extended':'bygrave_ladder_middle_extended.stl',
          'cursor_coupon':'bygrave_cursor_coupons.stl'}
 if args.render_parts:
     (root/'tools/render-parts').mkdir(exist_ok=True)

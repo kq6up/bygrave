@@ -270,6 +270,67 @@ module ladder(finished, wall=2.4, h=10) {
   }
 }
 
+// Embedded block numerals keep the raised labels printable in headless exports.
+module fit_ring_label(label, pixel=0.55) {
+  glyphs = [
+    ["0", ["01110","11011","11011","11011","11011","11011","01110"]],
+    ["1", ["00100","01100","00100","00100","00100","00100","01110"]],
+    ["2", ["01110","11011","00011","00110","01100","11000","11111"]],
+    ["3", ["11110","00011","00011","01110","00011","00011","11110"]],
+    ["4", ["00011","00111","01111","11011","11111","00011","00011"]],
+    ["5", ["11111","11000","11000","11110","00011","11011","01110"]],
+    ["6", ["01110","11000","11000","11110","11011","11011","01110"]],
+    ["7", ["11111","00011","00110","00110","01100","01100","01100"]],
+    ["8", ["01110","11011","11011","01110","11011","11011","01110"]],
+    ["9", ["01110","11011","11011","01111","00011","00011","01110"]],
+    ["I", ["01110","00100","00100","00100","00100","00100","01110"]],
+    ["D", ["11110","11011","11011","11011","11011","11011","11110"]],
+    ["m", ["00000","00000","11010","11111","10101","10101","10101"]],
+    ["+", ["00000","00100","00100","11111","00100","00100","00000"]],
+    [".", ["00000","00000","00000","00000","00000","00100","00100"]]
+  ];
+  linear_extrude(height=0.85)
+    union()
+      for (i=[0:len(label)-1], g=glyphs)
+        if (label[i] == g[0])
+          for (row=[0:6], col=[0:4])
+            if (g[1][row][col] == "1")
+              translate([(i*6 + col - (len(label)*6 - 1)/2)*pixel,
+                         (2.5 - row)*pixel])
+                square(pixel + 0.06);
+}
+
+// Two wider middle-bore trials for a tube that is still snug at +0.55 mm.
+// Both lines on each tab are raised: diametral clearance and nominal bore ID.
+module ladder_middle_extended(finished, wall=2.4, h=10) {
+  steps = [0.65, 0.75];
+  tab_w = 40;
+  tab_d = 16;
+  tab_h = 2;
+  for (i=[0:len(steps)-1]) {
+    clearance = steps[i];
+    id = finished + clearance;
+    od = id + 2*wall;
+    translate([0, i * (finished + steps[1] + 2*wall + 8), 0])
+      difference() {
+        union() {
+          tube(od, id, h);
+          translate([od/2 - 1, -tab_d/2, 0])
+            cube([tab_w, tab_d, tab_h]);
+          translate([od/2 - 1 + tab_w/2, 3.4, tab_h - 0.05])
+            fit_ring_label(str("+", clearance, " mm"));
+          translate([od/2 - 1 + tab_w/2, -3.5, tab_h - 0.05])
+            fit_ring_label(str("ID ", round(id*100)/100, " mm"));
+        }
+        // Continue the original ladder's numbering with six and seven notches.
+        for (k=[0:5+i])
+          rotate([0,0,90 + k*8])
+            translate([od/2 - wall/2 - 1, -0.6, h-1])
+              cube([wall+2, 1.2, 1.2]);
+      }
+  }
+}
+
 // ---------- choose part ----------
 // Override with -D 'part="inner"' etc. from the command line.
 part = "assembly";
@@ -283,6 +344,7 @@ else if (part == "cursor_coupon") cursor_coupons();
 else if (part == "calibration") od_check_rings();
 else if (part == "od_check") od_check_rings();
 else if (part == "ladder_middle") ladder(inner_finished);
+else if (part == "ladder_middle_extended") ladder_middle_extended(inner_finished);
 else if (part == "ladder_outer")  ladder(middle_finished);
 else if (part == "assembly") {
   color([0.88,0.80,0.58]) inner_tube();
